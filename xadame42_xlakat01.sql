@@ -5,8 +5,8 @@
 
 -- DROP TABLES
 
-DROP TABLE Uzivatel;
-DROP TABLE NavstevovaneSkoly;
+DROP TABLE Uzivatel CASCADE CONSTRAINTS;
+DROP TABLE NavstevovaneSkoly CASCADE CONSTRAINTS;
 DROP TABLE TextovyPrispevek;
 DROP TABLE Fotka;
 DROP TABLE Album;
@@ -32,7 +32,8 @@ CREATE TABLE Uzivatel(
 
 
 CREATE TABLE NavstevovaneSkoly(
-    EMAIL VARCHAR2(50) NOT NULL
+    EMAIL VARCHAR2(50) NOT NULL,
+    Skola VARCHAR2(25) NOT NULL
 );
 
 
@@ -137,14 +138,14 @@ ALTER TABLE Uzivatel ADD CONSTRAINT PK_EMAIL PRIMARY KEY(EMAIL);
 
 
 -- INSERT FOREIGN KEYS TO TABLES
-
+ALTER TABLE NavstevovaneSkoly ADD CONSTRAINT FK_EMAIL FOREIGN KEY (EMAIL) REFERENCES Uzivatel(EMAIL);
 
 
 
 
 -- INSERT VALUES INTO TABLES
 
-
+--INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni ,Bydliste, Zamestnani, Kontakt) VALUES('xxx@gmail.com', 'Attila', 'Lakatos', 'Moon', 'MojaFirma s.r.o.', '999999999');
 
 
 
