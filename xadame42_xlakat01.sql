@@ -31,8 +31,8 @@ CREATE TABLE Uzivatel(
     Prijmeni VARCHAR2(50) NOT NULL,
     Adresa VARCHAR2(100) NOT NULL,
     Mesto VARCHAR2(100) NOT NULL,
-    PSC VARCHAR2(50) NOT NULL, 
-    Zeme VARCHAR2(50) NOT NULL 
+    PSC VARCHAR2(50) NOT NULL,
+    Zeme VARCHAR2(50) NOT NULL
 );
 
 
@@ -44,7 +44,7 @@ CREATE TABLE NavstevovaneSkoly(
 
 CREATE TABLE Zamestnani(
     EMAIL VARCHAR2(50) NOT NULL,
-    Spolecnost VARCHAR2(50) NOT NULL, 
+    Spolecnost VARCHAR2(50) NOT NULL,
     Pozice VARCHAR2(50) NOT NULL
 );
 
@@ -203,10 +203,11 @@ ALTER TABLE SoucastiKonverzace ADD CONSTRAINT FK_IDKonverzace_Konverzace FOREIGN
 
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('ABCD@gmail.com', 'Attila', 'Lakatos', 'Craterstreet 65', 'Moonopolis', '66666', 'Moon');
 INSERT INTO Zamestnani(EMAIL, Spolecnost, Pozice) VALUES('ABCD@gmail.com', 'MojaFirma s.r.o.', 'Uklizecka');
-INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('First action', 'Popis first action', TO_DATE('20:00 27-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
+INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Imagine Dragons concert', 'Popis Imagine Dragons concert', TO_DATE('20:00 27-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
 INSERT INTO TextovyPrispevek(Obsah, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES ('First TextovyPrispevek', TO_TIMESTAMP('21:25 04-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
 INSERT INTO Fotka(Obsah, Soubor, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES ('Fotka', RAWTOHEX('Test'), TO_TIMESTAMP('21:45 01-02-2008', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com');
 
+INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('jane.doe@fakemail.com', 'Jane', 'Doe', 'Notastreet 32', 'London', '78865', 'United Kingdom');
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('greg.strongman@fakemail.com', 'Gregor', 'Strongman', 'Paperstreet 17', 'New York City', '89223', 'New York');
 INSERT INTO NavstevovaneSkoly(EMAIL, Skola) VALUES('greg.strongman@fakemail.com', 'Harvard');
 INSERT INTO NavstevovaneSkoly(EMAIL, Skola) VALUES('greg.strongman@fakemail.com', 'Yale');
@@ -219,8 +220,23 @@ INSERT INTO Fotka(Obsah, Soubor, CasADatumPublikovani, MistoPublikovani, EMAIL) 
 INSERT INTO Fotka(Obsah, Soubor, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES('Me and my pugs', RAWTOHEX('Test'), TO_TIMESTAMP('20:00 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'Washington', 'greg.strongman@fakemail.com');
 INSERT INTO Album(Nazev, Popis, NastaveniSoukromi, EMAIL, IDFotky) VALUES('Traveling', 'Around the world, around the world...', 'Public', 'greg.strongman@fakemail.com', 1);
 INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Ukulele Party', 'Only for ukulele enthusiasts', TO_TIMESTAMP('21:25 01-04-2018', 'HH24:MI DD-MM-YYYY'), 'Miami Beach', 'greg.strongman@fakemail.com');
+INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Graduation ceremony', 'Graduated at VUT FIT', TO_TIMESTAMP('14:00 03-04-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'greg.strongman@fakemail.com');
 INSERT INTO Konverzace(Nazev) VALUES('Smalltalk');
+
+INSERT INTO Konverzace(Nazev) VALUES('ProjectGroup');
+INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('greg.strongman@fakemail.com', 2);
+INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('ABCD@gmail.com', 2);
+INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hello, how old are you?', TO_TIMESTAMP('18:00 24-01-2018', 'HH24:MI DD-MM-YYYY'), 'Praha', 'greg.strongman@fakemail.com', 2);
+INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hi, I am 16 and you?', TO_TIMESTAMP('18:01 24-01-2018', 'HH24:MI DD-MM-YYYY'), 'Olomouc', 'ABCD@gmail.com', 2);
+
+
+
+
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hello Jane! Long time no see', TO_TIMESTAMP('20:00 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'London', 'greg.strongman@fakemail.com', 1);
+INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hello Greg! How are you', TO_TIMESTAMP('20:01 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'Berlin', 'jane.doe@fakemail.com', 1);
+INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('I am fine thanks, and you?', TO_TIMESTAMP('20:02 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'London', 'greg.strongman@fakemail.com', 1);
+INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Me too :)', TO_TIMESTAMP('20:03 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'Berlin', 'jane.doe@fakemail.com', 1);
+
 INSERT INTO OznaceniVPrispevku(EMAIL, IDPrispevku) VALUES('greg.strongman@fakemail.com', 2);
 INSERT INTO OznaceniNaFotce(EMAIL, IDFotky) VALUES('greg.strongman@fakemail.com', 1);
 INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(1, 1);
@@ -228,7 +244,7 @@ INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(1, 2);
 INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('greg.strongman@fakemail.com', 1);
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('greg.strongman@fakemail.com', 1);
 
-INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('jane.doe@fakemail.com', 'Jane', 'Doe', 'Notastreet 32', 'London', '78865', 'United Kingdom');
+
 INSERT INTO NavstevovaneSkoly(EMAIL, Skola) VALUES('jane.doe@fakemail.com', 'MIT');
 INSERT INTO Zamestnani(EMAIL, Spolecnost, Pozice) VALUES('jane.doe@fakemail.com', 'Very colorful socks inc.', 'Manager');
 INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', 'twitter.com/janedoe');
@@ -244,4 +260,50 @@ INSERT INTO Vztah(EMAIL1, EMAIL2, TypVztahu) VALUES('greg.strongman@fakemail.com
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('donjohn@fakemail.com', 'John', 'Spielberg', 'Central Park', 'New York City', '89223', 'New York');
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('marge@fakemail.com', 'Margarita', 'Strawman', 'Shortstreet 5', 'London', '55514', 'United Kingdom');
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('sharkbiscuit@fakemail.com', 'Jerry', 'Smith', 'Streetystreet 11', 'Sydney', '99587', 'Australia');
+INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('marge@fakemail.com', 1);
+INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('sharkbiscuit@fakemail.com', 1);
 
+-- 3rd part of the project
+-- SELECT (A JOIN B) 1st
+-- Vypise navstevovane skoly uzivatela Gregor Strongman
+SELECT Skola
+FROM Uzivatel NATURAL JOIN NavstevovaneSkoly
+WHERE Jmeno = 'Gregor' AND Prijmeni='Strongman';
+
+
+-- SELECT (A JOIN B) 2nd
+-- Vypise email, jmeno, prijmeni uzivatelov kteri publikovali alespon jeden TextovyPrispevek mezi 02.03.2018 a 05.03.2018
+SELECT DISTINCT EMAIL, Jmeno, Prijmeni
+FROM Uzivatel NATURAL JOIN TextovyPrispevek
+WHERE CasADatumPublikovani BETWEEN '02-MAR-18' AND '05-MAR-18';
+
+
+-- SELECT (A JOIN B JOIN C)
+-- Vypise vsechny uzivatele( a nazvy akci) kteri se zucastnili na nejakem akci v Brne
+SELECT DISTINCT Jmeno, Prijmeni, Nazev
+FROM  Uzivatel NATURAL JOIN UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce
+WHERE MistoKonani = 'Brno';
+
+
+-- SELECT GROUP BY + AGR 1st
+-- Kolik akci vytvorili jednotlivi klienti
+SELECT Jmeno, Prijmeni, COUNT(IDAkce) as PocetVytvorenychAkcii
+FROM Uzivatel NATURAL JOIN Akce
+GROUP BY Jmeno, Prijmeni
+ORDER BY PocetVytvorenychAkcii DESC;
+
+
+-- SELECT EXISTS
+-- Kteri uzivatelia jsou soucasti konverzace 'Smalltalk' ale nejsou zadnej inej
+SELECT DISTINCT Jmeno, Prijmeni, Adresa, Mesto ,PSC, Zeme
+FROM Uzivatel U, SoucastiKonverzace S, Konverzace K
+WHERE U.EMAIL = S.EMAIL AND S.IDKonverzace = K.IDKonverzace AND Nazev='Smalltalk' AND
+    NOT EXISTS(SELECT * FROM Konverzace K NATURAL JOIN SoucastiKonverzace S WHERE S.EMAIL = U.EMAIL AND K.Nazev <> 'Smalltalk');
+
+
+-- SELECT IN
+-- Kteri klienti byli oznaceni v Textovem prispevku v meste 'Washington'?
+
+SELECT * FROM Uzivatel WHERE EMAIL IN
+    (SELECT EMAIL FROM OznaceniVPrispevku where IDPrispevku IN
+        (SELECT IDPrispevku FROM TextovyPrispevek WHERE MistoPublikovani='Washington'));
