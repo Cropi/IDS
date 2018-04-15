@@ -203,7 +203,7 @@ ALTER TABLE SoucastiKonverzace ADD CONSTRAINT FK_IDKonverzace_Konverzace FOREIGN
 
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('ABCD@gmail.com', 'Attila', 'Lakatos', 'Craterstreet 65', 'Moonopolis', '66666', 'Moon');
 INSERT INTO Zamestnani(EMAIL, Spolecnost, Pozice) VALUES('ABCD@gmail.com', 'MojaFirma s.r.o.', 'Uklizecka');
-INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Imagine Dragons concert', 'Popis Imagine Dragons concert', TO_DATE('20:00 27-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
+INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Imagine Dragons concert', 'Popis Imagine Dragons concert', TO_TIMESTAMP('20:00 27-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
 INSERT INTO TextovyPrispevek(Obsah, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES ('First TextovyPrispevek', TO_TIMESTAMP('21:25 04-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
 INSERT INTO Fotka(Obsah, Soubor, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES ('Fotka', RAWTOHEX('Test'), TO_TIMESTAMP('21:45 01-02-2008', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com');
 
@@ -302,7 +302,7 @@ WHERE U.EMAIL = S.EMAIL AND S.IDKonverzace = K.IDKonverzace AND Nazev='Smalltalk
 
 
 -- SELECT IN
--- Kteri klienti byli oznaceni v textovem prispevku v meste 'Washington'?
+-- Kteri klienti byli oznaceni v Textovem prispevku ve meste 'Washington'?
 SELECT * FROM Uzivatel WHERE EMAIL IN
     (SELECT EMAIL FROM OznaceniVPrispevku where IDPrispevku IN
         (SELECT IDPrispevku FROM TextovyPrispevek WHERE MistoPublikovani='Washington'));
