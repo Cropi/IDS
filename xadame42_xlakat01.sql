@@ -265,36 +265,36 @@ INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('sharkbiscuit@fakemai
 
 -- 3rd part of the project
 -- SELECT (A JOIN B) 1st
--- Vypise navstevovane skoly uzivatela Gregor Strongman
+-- Vypise navstevovane skoly uzivatele Gregor Strongman
 SELECT Skola
 FROM Uzivatel NATURAL JOIN NavstevovaneSkoly
 WHERE Jmeno = 'Gregor' AND Prijmeni='Strongman';
 
 
 -- SELECT (A JOIN B) 2nd
--- Vypise email, jmeno, prijmeni uzivatelov kteri publikovali alespon jeden TextovyPrispevek mezi 02.03.2018 a 05.03.2018
+-- Vypise email, jmeno, prijmeni uzivatelu, kteri publikovali alespon jeden TextovyPrispevek mezi 02.03.2018 a 05.03.2018
 SELECT DISTINCT EMAIL, Jmeno, Prijmeni
 FROM Uzivatel NATURAL JOIN TextovyPrispevek
 WHERE CasADatumPublikovani BETWEEN '02-MAR-18' AND '05-MAR-18';
 
 
 -- SELECT (A JOIN B JOIN C)
--- Vypise vsechny uzivatele( a nazvy akci) kteri se zucastnili na nejakem akci v Brne
+-- Vypise vsechny uzivatele (a nazvy akci), kteri se zucastnili na nejake akci v Brne
 SELECT DISTINCT Jmeno, Prijmeni, Nazev
 FROM  Uzivatel NATURAL JOIN UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce
 WHERE MistoKonani = 'Brno';
 
 
 -- SELECT GROUP BY + AGR 1st
--- Kolik akci vytvorili jednotlivi klienti
-SELECT Jmeno, Prijmeni, COUNT(IDAkce) as PocetVytvorenychAkcii
+-- Kolik akci vytvorili jednotlivi klienti?
+SELECT Jmeno, Prijmeni, COUNT(IDAkce) as PocetVytvorenychAkci
 FROM Uzivatel NATURAL JOIN Akce
 GROUP BY Jmeno, Prijmeni
-ORDER BY PocetVytvorenychAkcii DESC;
+ORDER BY PocetVytvorenychAkci DESC;
 
 
 -- SELECT EXISTS
--- Kteri uzivatelia jsou soucasti konverzace 'Smalltalk' ale nejsou zadnej inej
+-- Kteri uzivatele jsou soucasti konverzace 'Smalltalk', ale nejsou v zadne jine?
 SELECT DISTINCT Jmeno, Prijmeni, Adresa, Mesto ,PSC, Zeme
 FROM Uzivatel U, SoucastiKonverzace S, Konverzace K
 WHERE U.EMAIL = S.EMAIL AND S.IDKonverzace = K.IDKonverzace AND Nazev='Smalltalk' AND
@@ -302,8 +302,7 @@ WHERE U.EMAIL = S.EMAIL AND S.IDKonverzace = K.IDKonverzace AND Nazev='Smalltalk
 
 
 -- SELECT IN
--- Kteri klienti byli oznaceni v Textovem prispevku v meste 'Washington'?
-
+-- Kteri klienti byli oznaceni v textovem prispevku v meste 'Washington'?
 SELECT * FROM Uzivatel WHERE EMAIL IN
     (SELECT EMAIL FROM OznaceniVPrispevku where IDPrispevku IN
         (SELECT IDPrispevku FROM TextovyPrispevek WHERE MistoPublikovani='Washington'));
