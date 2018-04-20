@@ -22,6 +22,9 @@ DROP TABLE OznaceniNaFotce CASCADE CONSTRAINTS;
 DROP TABLE SoucastiAlba CASCADE CONSTRAINTS;
 DROP TABLE UcastNaAkci CASCADE CONSTRAINTS;
 DROP TABLE SoucastiKonverzace CASCADE CONSTRAINTS;
+DROP SEQUENCE IDAkce;
+DROP TRIGGER AutoIncIDAkce;
+DROP TRIGGER Kontrola_PSC;
 
 -- CREATE TABLES
 
@@ -248,7 +251,7 @@ INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('greg.strongman@fakem
 INSERT INTO NavstevovaneSkoly(EMAIL, Skola) VALUES('jane.doe@fakemail.com', 'MIT');
 INSERT INTO Zamestnani(EMAIL, Spolecnost, Pozice) VALUES('jane.doe@fakemail.com', 'Very colorful socks inc.', 'Manager');
 INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', 'twitter.com/janedoe');
-INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', '656 868 753');
+INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', '00421910543632');
 INSERT INTO TextovyPrispevek(Obsah, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES('How do I delete my account from this horrible website?', TO_TIMESTAMP('20:00 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'Manchester', 'jane.doe@fakemail.com');
 INSERT INTO Fotka(Obsah, Soubor, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES('Raining in London, how surprising', RAWTOHEX('Test'), TO_TIMESTAMP('20:00 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'London', 'jane.doe@fakemail.com');
 INSERT INTO Album(Nazev, Popis, NastaveniSoukromi, EMAIL, IDFotky) VALUES('Beauty of UK', 'Long live the queen', 'Public', 'jane.doe@fakemail.com', 3);
@@ -306,3 +309,151 @@ WHERE U.EMAIL = S.EMAIL AND S.IDKonverzace = K.IDKonverzace AND Nazev='Smalltalk
 SELECT * FROM Uzivatel WHERE EMAIL IN
     (SELECT EMAIL FROM OznaceniVPrispevku where IDPrispevku IN
         (SELECT IDPrispevku FROM TextovyPrispevek WHERE MistoPublikovani='Washington'));
+
+-- ------------------------------------ --
+-- LAST PART OF THE PROJECT STARTS HERE --
+-- ------------------------------------ --
+
+
+CREATE SEQUENCE IDAkce START WITH 50 INCREMENT BY 1;
+-- Trigger na auto inkrementaciu cisel Akcii pri vkladani do tabulky
+CREATE OR REPLACE TRIGGER AutoIncIDAkce
+    BEFORE INSERT ON Akce
+    FOR EACH ROW
+BEGIN
+    :NEW.IDAkce := IDAkce.nextval;
+END;
+/
+
+INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('IDS-4', '4th parth of the project', TO_TIMESTAMP('23:59 01-05-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'greg.strongman@fakemail.com');
+INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('IDS-5', 'Last parth of the project', TO_TIMESTAMP('23:59 01-05-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'greg.strongman@fakemail.com');
+INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('IDS-3', '3rd parth of the project', TO_TIMESTAMP('23:59 15-04-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'greg.strongman@fakemail.com');
+
+SELECT *
+FROM Akce
+WHERE IDAkce BETWEEN 50 AND 70;
+
+
+-- Trigger na kontrolu PSC
+CREATE OR REPLACE TRIGGER Kontrola_PSC
+    BEFORE INSERT OR UPDATE OF PSC on Uzivatel
+    FOR EACH ROW
+DECLARE
+    PSC Uzivatel.PSC%TYPE;
+BEGIN
+    PSC := :NEW.PSC;
+    IF (LENGTH(PSC) <> 5)
+        THEN raise_application_error(-1, 'PSC je ve spatnem formatu(000 00 - 999 99)');
+    END IF;
+
+    IF (PSC < 0 OR PSC > 99999)
+        THEN raise_application_error(-2, 'PSC je ve spatnem formatu(000 00 - 999 99)');
+    END IF;
+END;
+/
+
+
+-- Procedura, ktera vypise pocet akcii v meste Brno a jeho procentularni vyjadreni
+CREATE OR REPLACE PROCEDURE Aktualne_Akce(HledaneMisto IN VARCHAR2)
+IS
+    CURSOR AktAkce IS SELECT * FROM Akce;
+    AktualniAkce AktAkce%ROWTYPE;
+    PocetVsetkychAkcii NUMBER;
+    PocetHladanychAkci NUMBER;
+BEGIN
+    PocetVsetkychAkcii := 0;
+    PocetHladanychAkci := 0;
+    OPEN AktAkce;
+    LOOP
+        FETCH AktAkce INTO AktualniAkce;
+        EXIT WHEN AktAkce%NOTFOUND;
+
+        IF (AktualniAkce.MistoKonani IS NOT NULL) THEN
+            PocetVsetkychAkcii := PocetVsetkychAkcii + 1;
+        END IF;
+
+        IF (AktualniAkce.MistoKonani LIKE HledaneMisto) THEN
+            PocetHladanychAkci := PocetHladanychAkci + 1;
+        END IF;
+    END LOOP;
+    CLOSE AktAkce;
+
+    dbms_output.put_line('Pocet akcii v meste ' || HledaneMisto || ' je: ' || PocetHladanychAkci);
+    dbms_output.put_line('Procentularni vyjadreni akcii v meste Brno je: ' || ROUND((PocetHladanychAkci / PocetVsetkychAkcii)*100, 2));
+    dbms_output.put_line('Pocet vsetkych akcii je: ' || PocetVsetkychAkcii);
+
+EXCEPTION
+    WHEN ZERO_DIVIDE THEN
+        dbms_output.put_line('Pocet vsetkych akcii je 0.');
+END;
+/
+
+-- Ukazka procedury 1
+exec Aktualne_Akce('Brno');
+
+
+-- Procedura, ktera vypise vsechny uzivatele, kteri zadali nespravne kontaktni udaje a statisku o kontaktnich udajov
+CREATE OR REPLACE PROCEDURE PrehledKontaktnichUdaju
+IS
+    CURSOR Kontakt IS SELECT * FROM KontaktniUdaje;
+    SeznamKontaktu Kontakt%ROWTYPE;
+    PocetEmailov NUMBER;
+    PocetTelefonnichCisel NUMBER;
+    PocetAccountov NUMBER; -- Facebook, Twitter...
+    PocetNespravneZadanich NUMBER;
+    PocetWebovychStranek NUMBER;
+BEGIN
+    PocetEmailov := 0;
+    PocetTelefonnichCisel := 0;
+    PocetAccountov := 0;
+    PocetNespravneZadanich := 0;
+    PocetWebovychStranek := 0;
+
+    OPEN Kontakt;
+    LOOP
+        FETCH Kontakt INTO SeznamKontaktu;
+        EXIT WHEN Kontakt%NOTFOUND;
+
+        IF (SeznamKontaktu.Kontakt LIKE '%_@_%.__%') THEN
+            PocetEmailov := PocetEmailov + 1;
+        ELSE
+            IF (LENGTH(SeznamKontaktu.Kontakt) = 14 AND (SeznamKontaktu.Kontakt LIKE '0%' OR SeznamKontaktu.Kontakt LIKE '+%')) THEN
+                PocetTelefonnichCisel := PocetTelefonnichCisel + 1;
+            ELSE
+                IF (SUBSTR(SeznamKontaktu.Kontakt, 0, 13) = 'facebook.com/' OR SUBSTR(SeznamKontaktu.Kontakt, 0, 12) = 'twitter.com/') THEN
+                    IF ((SeznamKontaktu.Kontakt LIKE 'facebook.com/%' AND LENGTH(SeznamKontaktu.Kontakt) > 13) OR (SeznamKontaktu.Kontakt LIKE 'twitter.com/%' AND LENGTH(SeznamKontaktu.Kontakt) > 12)) THEN
+                        PocetAccountov := PocetAccountov + 1;
+                    ELSE
+                        PocetNespravneZadanich := PocetNespravneZadanich + 1;
+                        dbms_output.put_line('Uzivatel s emailem: ' || SeznamKontaktu.EMAIL || ' zadal nespravne kontaktni udaje: ' || SeznamKontaktu.Kontakt);
+                    END IF;
+                ELSE
+                    IF (SeznamKontaktu.Kontakt LIKE '_%.__%') THEN
+                        PocetWebovychStranek := PocetWebovychStranek + 1;
+                    ELSE
+                        dbms_output.put_line('Uzivatel s emailem: ' || SeznamKontaktu.EMAIL || ' zadal nespravne kontaktni udaje: ' || SeznamKontaktu.Kontakt);
+                        PocetNespravneZadanich := PocetNespravneZadanich + 1;
+                    END IF;
+                END IF;
+            END IF;
+        END IF;
+    END LOOP;
+
+    CLOSE Kontakt;
+
+    dbms_output.put_line('Pocet kontaktnich emailov: ' || PocetEmailov);
+    dbms_output.put_line('Pocet telefonnich cisel: ' || PocetTelefonnichCisel);
+    dbms_output.put_line('Pocet accountov: ' || PocetAccountov);
+    dbms_output.put_line('Pocet webovych stranek: ' || PocetWebovychStranek);
+    dbms_output.put_line('Pocet nespravne zadanich kont.' || PocetNespravneZadanich);
+END;
+/
+
+
+-- Ukazka: Zadame 3 nespravne kontaktni udaje a ukazeme, ze nasa procedura detekuje
+INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('greg.strongman@fakemail.com', '+42093642365'); -- o 1 cislo menej
+INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('ABCD@gmail.com', 'failedtestcom'); -- zde chybi tecka pred 'com'
+INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', 'facebook.com/'); -- za facebook.com/ procedura ocekava este jmeno uzivatela
+
+-- Ukazka procedury 2
+exec PrehledKontaktnichUdaju;
