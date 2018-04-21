@@ -22,9 +22,10 @@ DROP TABLE OznaceniNaFotce CASCADE CONSTRAINTS;
 DROP TABLE SoucastiAlba CASCADE CONSTRAINTS;
 DROP TABLE UcastNaAkci CASCADE CONSTRAINTS;
 DROP TABLE SoucastiKonverzace CASCADE CONSTRAINTS;
+DROP INDEX IndexVytvoril;
 DROP SEQUENCE IDAkce;
-DROP TRIGGER AutoIncIDAkce;
-DROP TRIGGER Kontrola_PSC;
+DROP TRIGGER AutoIncIDAkce; -- mozno ze je to zbytecne
+DROP TRIGGER Kontrola_PSC; --  --||--
 
 -- CREATE TABLES
 
@@ -245,6 +246,9 @@ INSERT INTO OznaceniNaFotce(EMAIL, IDFotky) VALUES('greg.strongman@fakemail.com'
 INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(1, 1);
 INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(1, 2);
 INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('greg.strongman@fakemail.com', 1);
+INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('ABCD@gmail.com', 1);
+INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('ABCD@gmail.com', 2);
+
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('greg.strongman@fakemail.com', 1);
 
 
@@ -457,3 +461,54 @@ INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', 'face
 
 -- Ukazka procedury 2
 exec PrehledKontaktnichUdaju;
+
+
+
+/* Priklad na EXPLAIN PLAN A CREATE INDEX
+DROP INDEX IndexAkce;
+
+EXPLAIN PLAN FOR SELECT A.Nazev, COUNT(U.EMAIL) as PocetUcastnikov FROM UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce GROUP BY A.Nazev;
+SELECT plan_table_output FROM TABLE(dbms_xplan.display());
+
+CREATE INDEX IndexAkce ON UcastNaAkci(IDAkce);
+
+
+EXPLAIN PLAN FOR SELECT A.Nazev, COUNT(U.EMAIL) as PocetUcastnikov FROM UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce GROUP BY A.Nazev;
+SELECT plan_table_output FROM TABLE(dbms_xplan.display());
+*/
+
+-- Priklad na EXPLAIN PLAN A CREATE INDEX
+-- Vysledkem z tychto dvoch tabulek je ze sloupec TABLE ACESS FULL se zmeni na TABLE ACESS BY INDEX ROWID BATCHED => Je zrejme, ze system pouzil nas CREATE INDEX a zatizeni systemu se zmensil
+
+EXPLAIN PLAN FOR SELECT U.Jmeno, U. Prijmeni, COUNT(A.Nazev) FROM Uzivatel U NATURAL JOIN Akce A WHERE Nazev = 'Imagine Dragons concert' GROUP BY Jmeno, Prijmeni;
+SELECT plan_table_output FROM TABLE(dbms_xplan.display());
+
+CREATE INDEX IndexVytvoril ON Akce(Nazev);
+
+EXPLAIN PLAN FOR SELECT U.Jmeno, U. Prijmeni, COUNT(A.Nazev) FROM Uzivatel U NATURAL JOIN Akce A WHERE Nazev = 'Imagine Dragons concert' GROUP BY Jmeno, Prijmeni;
+SELECT plan_table_output FROM TABLE(dbms_xplan.display());
+
+
+
+-- Definice pristupovych prav k databazovym objektum pro druheho clena tymu
+GRANT ALL ON Uzivatel TO xadame42;
+GRANT ALL ON NavstevovaneSkoly TO xadame42;
+GRANT ALL ON Zamestnani TO xadame42;
+GRANT ALL ON KontaktniUdaje TO xadame42;
+GRANT ALL ON TextovyPrispevek TO xadame42;
+GRANT ALL ON Fotka TO xadame42;
+GRANT ALL ON Album TO xadame42;
+GRANT ALL ON Akce TO xadame42;
+GRANT ALL ON Zprava TO xadame42;
+GRANT ALL ON Konverzace TO xadame42;
+GRANT ALL ON Vztah TO xadame42;
+GRANT ALL ON OznaceniVPrispevku TO xadame42;
+GRANT ALL ON OznaceniNaFotce TO xadame42;
+GRANT ALL ON SoucastiAlba TO xadame42;
+GRANT ALL ON UcastNaAkci TO xadame42;
+GRANT ALL ON SoucastiKonverzace TO xadame42;
+
+GRANT EXECUTE ON PrehledKontaktnichUdaju TO xadame42;
+GRANT EXECUTE ON Aktualne_Akce TO xadame42;
+-- GRANT EXECUTE ON AutoIncIDAkce TO xadame42; -- Z neznamych duvodu nefunguje :D WTF?
+-- GRANT EXECUTE ON Kontrola_PSC TO xadame42;  -- taky..
