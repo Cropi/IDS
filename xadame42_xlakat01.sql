@@ -166,8 +166,8 @@ ALTER TABLE Fotka ADD CONSTRAINT PK_IDFotky PRIMARY KEY(IDFotky);
 ALTER TABLE Album ADD CONSTRAINT PK_IDAlba PRIMARY KEY(IDAlba);
 ALTER TABLE Akce ADD CONSTRAINT PK_IDAkce PRIMARY KEY(IDAkce);
 ALTER TABLE Zprava ADD CONSTRAINT PK_IDZpravy PRIMARY KEY(IDZpravy);
-ALTER TABLE Konverzace ADD CONSTRAINT PK_IDKonverzace PRIMARY KEY(IDKonverzace);
 
+ALTER TABLE Konverzace ADD CONSTRAINT PK_IDKonverzace PRIMARY KEY(IDKonverzace);
 ALTER TABLE Vztah ADD CONSTRAINT PK_Vztah PRIMARY KEY(EMAIL1, EMAIL2, TypVztahu);
 ALTER TABLE OznaceniVPrispevku ADD CONSTRAINT PK_OznaceniVPrispevku PRIMARY KEY(EMAIL, IDPrispevku);
 ALTER TABLE OznaceniNaFotce ADD CONSTRAINT PK_OznaceniNaFotce PRIMARY KEY(EMAIL, IDFotky);
@@ -179,25 +179,27 @@ ALTER TABLE SoucastiKonverzace ADD CONSTRAINT PK_SoucastiKonverzace PRIMARY KEY(
 ALTER TABLE NavstevovaneSkoly ADD CONSTRAINT FK_NavstevovaneSkoly FOREIGN KEY (EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE Zamestnani ADD CONSTRAINT FK_Zamestnani FOREIGN KEY (EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE KontaktniUdaje ADD CONSTRAINT FK_KontaktniUdaje FOREIGN KEY (EMAIL) REFERENCES Uzivatel(EMAIL);
-
 ALTER TABLE TextovyPrispevek ADD CONSTRAINT FK_EMAIL_TextovehoPrispevku FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE Fotka ADD CONSTRAINT FK_EMAIL_Fotky FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
+
 ALTER TABLE Fotka ADD CONSTRAINT FK_Akce_Fotky FOREIGN KEY(IDAkce) REFERENCES Akce(IDAkce);
 ALTER TABLE Album ADD CONSTRAINT FK_Email_Alba FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE Album ADD CONSTRAINT FK_IDPrispevku_Alba FOREIGN KEY(IDFotky) REFERENCES Fotka(IDFotky);
 ALTER TABLE Akce ADD CONSTRAINT FK_EMAIL_Akci FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE Zprava ADD CONSTRAINT FK_EMAIL_Zpravy FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
-ALTER TABLE Zprava ADD CONSTRAINT FK_IDKonverzace_Zpravy FOREIGN KEY(IDKonverzace) REFERENCES Konverzace(IDKonverzace);
 
+ALTER TABLE Zprava ADD CONSTRAINT FK_IDKonverzace_Zpravy FOREIGN KEY(IDKonverzace) REFERENCES Konverzace(IDKonverzace);
 ALTER TABLE Vztah ADD CONSTRAINT FK_EMAIL_Uzivatela1 FOREIGN KEY(EMAIL1) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE Vztah ADD CONSTRAINT FK_EMAIL_Uzivatela2 FOREIGN KEY(EMAIL2) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE OznaceniVPrispevku ADD CONSTRAINT FK_EMAIL_OznaceniVPrispevku FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE OznaceniVPrispevku ADD CONSTRAINT FK_IDTextovehoPrispevku FOREIGN KEY(IDPrispevku) REFERENCES TextovyPrispevek(IDPrispevku);
+
 ALTER TABLE OznaceniNaFotce ADD CONSTRAINT FK_EMAIL_OznaceniNaFotce FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE OznaceniNaFotce ADD CONSTRAINT FK_IDFotky FOREIGN KEY(IDFotky) REFERENCES Fotka(IDFotky);
 ALTER TABLE SoucastiAlba ADD CONSTRAINT FK_IDAlbaAlba FOREIGN KEY(IDAlba) REFERENCES Album(IDAlba);
 ALTER TABLE SoucastiAlba ADD CONSTRAINT FK_IDPrispevkuAlba FOREIGN KEY(IDFotky) REFERENCES Fotka(IDFotky);
 ALTER TABLE UcastNaAkci ADD CONSTRAINT FK_EMAIL_NaAkci FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
+
 ALTER TABLE UcastNaAkci ADD CONSTRAINT FK_IDAkce FOREIGN KEY(IDAkce) REFERENCES Akce(IDAkce);
 ALTER TABLE SoucastiKonverzace ADD CONSTRAINT FK_EMAIL_Konverzace FOREIGN KEY(EMAIL) REFERENCES Uzivatel(EMAIL);
 ALTER TABLE SoucastiKonverzace ADD CONSTRAINT FK_IDKonverzace_Konverzace FOREIGN KEY(IDKonverzace) REFERENCES Konverzace(IDKonverzace);
@@ -210,7 +212,6 @@ INSERT INTO Zamestnani(EMAIL, Spolecnost, Pozice) VALUES('ABCD@gmail.com', 'Moja
 INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Imagine Dragons concert', 'Popis Imagine Dragons concert', TO_TIMESTAMP('20:00 27-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
 INSERT INTO TextovyPrispevek(Obsah, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES ('First TextovyPrispevek', TO_TIMESTAMP('21:25 04-03-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com' );
 INSERT INTO Fotka(Obsah, Soubor, CasADatumPublikovani, MistoPublikovani, EMAIL) VALUES ('Fotka', RAWTOHEX('Test'), TO_TIMESTAMP('21:45 01-02-2008', 'HH24:MI DD-MM-YYYY'), 'Brno', 'ABCD@gmail.com');
-
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('jane.doe@fakemail.com', 'Jane', 'Doe', 'Notastreet 32', 'London', '78865', 'United Kingdom');
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('greg.strongman@fakemail.com', 'Gregor', 'Strongman', 'Paperstreet 17', 'New York City', '89223', 'New York');
 INSERT INTO NavstevovaneSkoly(EMAIL, Skola) VALUES('greg.strongman@fakemail.com', 'Harvard');
@@ -226,21 +227,15 @@ INSERT INTO Album(Nazev, Popis, NastaveniSoukromi, EMAIL, IDFotky) VALUES('Trave
 INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Ukulele Party', 'Only for ukulele enthusiasts', TO_TIMESTAMP('21:25 01-04-2018', 'HH24:MI DD-MM-YYYY'), 'Miami Beach', 'greg.strongman@fakemail.com');
 INSERT INTO Akce(Nazev, PopisAkce, CasADatumKonani, MistoKonani, EMAIL) VALUES('Graduation ceremony', 'Graduated at VUT FIT', TO_TIMESTAMP('14:00 03-04-2018', 'HH24:MI DD-MM-YYYY'), 'Brno', 'greg.strongman@fakemail.com');
 INSERT INTO Konverzace(Nazev) VALUES('Smalltalk');
-
 INSERT INTO Konverzace(Nazev) VALUES('ProjectGroup');
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('greg.strongman@fakemail.com', 2);
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('ABCD@gmail.com', 2);
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hello, how old are you?', TO_TIMESTAMP('18:00 24-01-2018', 'HH24:MI DD-MM-YYYY'), 'Praha', 'greg.strongman@fakemail.com', 2);
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hi, I am 16 and you?', TO_TIMESTAMP('18:01 24-01-2018', 'HH24:MI DD-MM-YYYY'), 'Olomouc', 'ABCD@gmail.com', 2);
-
-
-
-
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hello Jane! Long time no see', TO_TIMESTAMP('20:00 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'London', 'greg.strongman@fakemail.com', 1);
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Hello Greg! How are you', TO_TIMESTAMP('20:01 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'Berlin', 'jane.doe@fakemail.com', 1);
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('I am fine thanks, and you?', TO_TIMESTAMP('20:02 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'London', 'greg.strongman@fakemail.com', 1);
 INSERT INTO Zprava(Obsah, CasADatumZaslani, MistoZaslani, EMAIL, IDKonverzace) VALUES('Me too :)', TO_TIMESTAMP('20:03 31-03-2018', 'HH24:MI DD-MM-YYYY'), 'Berlin', 'jane.doe@fakemail.com', 1);
-
 INSERT INTO OznaceniVPrispevku(EMAIL, IDPrispevku) VALUES('greg.strongman@fakemail.com', 2);
 INSERT INTO OznaceniNaFotce(EMAIL, IDFotky) VALUES('greg.strongman@fakemail.com', 1);
 INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(1, 1);
@@ -248,10 +243,7 @@ INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(1, 2);
 INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('greg.strongman@fakemail.com', 1);
 INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('ABCD@gmail.com', 1);
 INSERT INTO UcastNaAkci(EMAIL, IDAkce) VALUES('ABCD@gmail.com', 2);
-
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('greg.strongman@fakemail.com', 1);
-
-
 INSERT INTO NavstevovaneSkoly(EMAIL, Skola) VALUES('jane.doe@fakemail.com', 'MIT');
 INSERT INTO Zamestnani(EMAIL, Spolecnost, Pozice) VALUES('jane.doe@fakemail.com', 'Very colorful socks inc.', 'Manager');
 INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', 'twitter.com/janedoe');
@@ -263,7 +255,6 @@ INSERT INTO SoucastiAlba(IDAlba, IDFotky) VALUES(2, 3);
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('jane.doe@fakemail.com', 1);
 INSERT INTO Vztah(EMAIL1, EMAIL2, TypVztahu) VALUES('greg.strongman@fakemail.com', 'jane.doe@fakemail.com', 'Friends');
 INSERT INTO Vztah(EMAIL1, EMAIL2, TypVztahu) VALUES('greg.strongman@fakemail.com', 'jane.doe@fakemail.com', 'Its complicated');
-
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('donjohn@fakemail.com', 'John', 'Spielberg', 'Central Park', 'New York City', '89223', 'New York');
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('marge@fakemail.com', 'Margarita', 'Strawman', 'Shortstreet 5', 'London', '55514', 'United Kingdom');
 INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('sharkbiscuit@fakemail.com', 'Jerry', 'Smith', 'Streetystreet 11', 'Sydney', '99587', 'Australia');
@@ -345,7 +336,6 @@ CREATE OR REPLACE TRIGGER Kontrola_PSC
 DECLARE
     PSC Uzivatel.PSC%TYPE;
 BEGIN
-    PSC := :NEW.PSC;
     IF (LENGTH(PSC) <> 5)
         THEN raise_application_error(-1, 'PSC je ve spatnem formatu(000 00 - 999 99)');
     END IF;
@@ -479,7 +469,6 @@ SELECT plan_table_output FROM TABLE(dbms_xplan.display());
 
 -- Priklad na EXPLAIN PLAN A CREATE INDEX
 -- Vysledkem z tychto dvoch tabulek je ze sloupec TABLE ACESS FULL se zmeni na TABLE ACESS BY INDEX ROWID BATCHED => Je zrejme, ze system pouzil nas CREATE INDEX a zatizeni systemu se zmensil
-
 EXPLAIN PLAN FOR SELECT U.Jmeno, U. Prijmeni, COUNT(A.Nazev) FROM Uzivatel U NATURAL JOIN Akce A WHERE Nazev = 'Imagine Dragons concert' GROUP BY Jmeno, Prijmeni;
 SELECT plan_table_output FROM TABLE(dbms_xplan.display());
 
@@ -510,5 +499,15 @@ GRANT ALL ON SoucastiKonverzace TO xadame42;
 
 GRANT EXECUTE ON PrehledKontaktnichUdaju TO xadame42;
 GRANT EXECUTE ON Aktualne_Akce TO xadame42;
--- GRANT EXECUTE ON AutoIncIDAkce TO xadame42; -- Z neznamych duvodu nefunguje :D WTF?
--- GRANT EXECUTE ON Kontrola_PSC TO xadame42;  -- taky..
+
+
+
+-- Ukazka na Materializovany prehled
+DROP MATERIALIZED VIEW MaterializovanyPohledTest;
+CREATE MATERIALIZED VIEW MaterializovanyPohledTest CACHE BUILD IMMEDIATE REFRESH FAST ON COMMIT AS SELECT * FROM xadame42.Uzivatel WHERE Jmeno='Test_Materialized_View';
+
+INSERT INTO xadame42.Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('Test_Mat@gmail.com', 'Test_Materialized_View', 'Nothing', 'Craterstreet 65', 'Moonopolis', '94612', 'Moon');
+COMMIT;
+
+SELECT * FROM xadam42.Uzivatel WHERE Jmeno='Test_Materialized_View';
+SELECT * FROM MaterializovanyPohledTest;
