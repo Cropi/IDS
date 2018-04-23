@@ -22,10 +22,10 @@ DROP TABLE OznaceniNaFotce CASCADE CONSTRAINTS;
 DROP TABLE SoucastiAlba CASCADE CONSTRAINTS;
 DROP TABLE UcastNaAkci CASCADE CONSTRAINTS;
 DROP TABLE SoucastiKonverzace CASCADE CONSTRAINTS;
-DROP INDEX IndexVytvoril;
+-- DROP INDEX IndexVytvoril;
+-- DROP TRIGGER AutoIncIDAkce;
+-- DROP TRIGGER Kontrola_PSC;
 DROP SEQUENCE IDAkce;
-DROP TRIGGER AutoIncIDAkce; -- mozno ze je to zbytecne
-DROP TRIGGER Kontrola_PSC; --  --||--
 
 -- CREATE TABLES
 
@@ -502,12 +502,25 @@ GRANT EXECUTE ON Aktualne_Akce TO xadame42;
 
 
 
+
 -- Ukazka na Materializovany prehled
 DROP MATERIALIZED VIEW MaterializovanyPohledTest;
-CREATE MATERIALIZED VIEW MaterializovanyPohledTest CACHE BUILD IMMEDIATE REFRESH FAST ON COMMIT AS SELECT * FROM xadame42.Uzivatel WHERE Jmeno='Test_Materialized_View';
+CREATE MATERIALIZED VIEW LOG ON Uzivatel WITH PRIMARY KEY, ROWID(Jmeno) INCLUDING NEW VALUES;
+CREATE MATERIALIZED VIEW MaterializovanyPohledTest CACHE BUILD IMMEDIATE REFRESH FAST ON COMMIT AS SELECT * FROM xlakat01.Uzivatel WHERE Jmeno='Test_Materialized_View';
+GRANT ALL ON MaterializovanyPohledTest TO xadame42;
 
-INSERT INTO xadame42.Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('Test_Mat@gmail.com', 'Test_Materialized_View', 'Nothing', 'Craterstreet 65', 'Moonopolis', '94612', 'Moon');
+-- Tabulka este neobsahuje ani jeden radek s Jmenem 'Test_Materialized_View'
+SELECT * FROM Uzivatel WHERE Jmeno='Test_Materialized_View';
+SELECT * FROM MaterializovanyPohledTest;
+
+-- Vlozime Uzivatel s Jmenem 'Test_Materialized_View'
+INSERT INTO xlakat01.Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('Test_Mat@gmail.com', 'Test_Materialized_View', 'Nothing', 'Craterstreet 65', 'Moonopolis', '94612', 'Moon');
+
+-- MaterializovanyPohledTest bude obsahovat 'Test_Materialized_View' len po COMMITu
+SELECT * FROM Uzivatel WHERE Jmeno='Test_Materialized_View';
+SELECT * FROM MaterializovanyPohledTest;
+
 COMMIT;
 
-SELECT * FROM xadam42.Uzivatel WHERE Jmeno='Test_Materialized_View';
+SELECT * FROM Uzivatel WHERE Jmeno='Test_Materialized_View';
 SELECT * FROM MaterializovanyPohledTest;
