@@ -506,7 +506,7 @@ GRANT EXECUTE ON Aktualne_Akce TO xadame42;
 -- Ukazka na Materializovany prehled
 DROP MATERIALIZED VIEW MaterializovanyPohledTest;
 CREATE MATERIALIZED VIEW LOG ON Uzivatel WITH PRIMARY KEY, ROWID(Jmeno) INCLUDING NEW VALUES;
-CREATE MATERIALIZED VIEW MaterializovanyPohledTest CACHE BUILD IMMEDIATE REFRESH FAST ON COMMIT AS SELECT * FROM xlakat01.Uzivatel WHERE Jmeno='Test_Materialized_View';
+CREATE MATERIALIZED VIEW MaterializovanyPohledTest BUILD IMMEDIATE REFRESH FAST ON COMMIT AS SELECT * FROM xlakat01.Uzivatel WHERE Jmeno='Test_Materialized_View';
 GRANT ALL ON MaterializovanyPohledTest TO xadame42;
 
 -- Tabulka este neobsahuje ani jeden radek s Jmenem 'Test_Materialized_View'
@@ -524,3 +524,4 @@ COMMIT;
 
 SELECT * FROM Uzivatel WHERE Jmeno='Test_Materialized_View';
 SELECT * FROM MaterializovanyPohledTest;
+--
