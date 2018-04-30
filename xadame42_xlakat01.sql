@@ -336,6 +336,7 @@ CREATE OR REPLACE TRIGGER Kontrola_PSC
 DECLARE
     PSC Uzivatel.PSC%TYPE;
 BEGIN
+    PSC := :NEW.PSC;
     IF (LENGTH(PSC) <> 5)
         THEN raise_application_error(-1, 'PSC je ve spatnem formatu(000 00 - 999 99)');
     END IF;
