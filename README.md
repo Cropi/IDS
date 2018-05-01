@@ -1,6 +1,7 @@
 # IDS Dokumentace
 
 **Téma:** Sociální síť
+
 **Autoři:** 
 * Attila Lakatos (xlakat01)
 * Josef Adámek (xadame42)
