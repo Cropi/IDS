@@ -22,9 +22,6 @@ DROP TABLE OznaceniNaFotce CASCADE CONSTRAINTS;
 DROP TABLE SoucastiAlba CASCADE CONSTRAINTS;
 DROP TABLE UcastNaAkci CASCADE CONSTRAINTS;
 DROP TABLE SoucastiKonverzace CASCADE CONSTRAINTS;
--- DROP INDEX IndexVytvoril;
--- DROP TRIGGER AutoIncIDAkce;
--- DROP TRIGGER Kontrola_PSC;
 DROP SEQUENCE IDAkce;
 
 -- CREATE TABLES
@@ -261,49 +258,6 @@ INSERT INTO Uzivatel(EMAIL, Jmeno, Prijmeni, Adresa, Mesto, PSC, Zeme) VALUES('s
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('marge@fakemail.com', 1);
 INSERT INTO SoucastiKonverzace(EMAIL, IDKonverzace) VALUES('sharkbiscuit@fakemail.com', 1);
 
--- 3rd part of the project
--- SELECT (A JOIN B) 1st
--- Vypise navstevovane skoly uzivatele Gregor Strongman
-SELECT Skola
-FROM Uzivatel NATURAL JOIN NavstevovaneSkoly
-WHERE Jmeno = 'Gregor' AND Prijmeni='Strongman';
-
-
--- SELECT (A JOIN B) 2nd
--- Vypise email, jmeno, prijmeni uzivatelu, kteri publikovali alespon jeden TextovyPrispevek mezi 02.03.2018 a 05.03.2018
-SELECT DISTINCT EMAIL, Jmeno, Prijmeni
-FROM Uzivatel NATURAL JOIN TextovyPrispevek
-WHERE CasADatumPublikovani BETWEEN '02-MAR-18' AND '05-MAR-18';
-
-
--- SELECT (A JOIN B JOIN C)
--- Vypise vsechny uzivatele (a nazvy akci), kteri se zucastnili na nejake akci v Brne
-SELECT DISTINCT Jmeno, Prijmeni, Nazev
-FROM  Uzivatel NATURAL JOIN UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce
-WHERE MistoKonani = 'Brno';
-
-
--- SELECT GROUP BY + AGR 1st
--- Kolik akci vytvorili jednotlivi klienti?
-SELECT Jmeno, Prijmeni, COUNT(IDAkce) as PocetVytvorenychAkci
-FROM Uzivatel NATURAL JOIN Akce
-GROUP BY Jmeno, Prijmeni
-ORDER BY PocetVytvorenychAkci DESC;
-
-
--- SELECT EXISTS
--- Kteri uzivatele jsou soucasti konverzace 'Smalltalk', ale nejsou v zadne jine?
-SELECT DISTINCT Jmeno, Prijmeni, Adresa, Mesto ,PSC, Zeme
-FROM Uzivatel U, SoucastiKonverzace S, Konverzace K
-WHERE U.EMAIL = S.EMAIL AND S.IDKonverzace = K.IDKonverzace AND Nazev='Smalltalk' AND
-    NOT EXISTS(SELECT * FROM Konverzace K NATURAL JOIN SoucastiKonverzace S WHERE S.EMAIL = U.EMAIL AND K.Nazev <> 'Smalltalk');
-
-
--- SELECT IN
--- Kteri klienti byli oznaceni v Textovem prispevku ve meste 'Washington'?
-SELECT * FROM Uzivatel WHERE EMAIL IN
-    (SELECT EMAIL FROM OznaceniVPrispevku where IDPrispevku IN
-        (SELECT IDPrispevku FROM TextovyPrispevek WHERE MistoPublikovani='Washington'));
 
 -- ------------------------------------ --
 -- LAST PART OF THE PROJECT STARTS HERE --
@@ -453,20 +407,6 @@ INSERT INTO KontaktniUdaje(EMAIL, Kontakt) VALUES('jane.doe@fakemail.com', 'face
 -- Ukazka procedury 2
 exec PrehledKontaktnichUdaju;
 
-
-
-/* Priklad na EXPLAIN PLAN A CREATE INDEX
-DROP INDEX IndexAkce;
-
-EXPLAIN PLAN FOR SELECT A.Nazev, COUNT(U.EMAIL) as PocetUcastnikov FROM UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce GROUP BY A.Nazev;
-SELECT plan_table_output FROM TABLE(dbms_xplan.display());
-
-CREATE INDEX IndexAkce ON UcastNaAkci(IDAkce);
-
-
-EXPLAIN PLAN FOR SELECT A.Nazev, COUNT(U.EMAIL) as PocetUcastnikov FROM UcastNaAkci U INNER JOIN Akce A ON U.IDAkce = A.IDAkce GROUP BY A.Nazev;
-SELECT plan_table_output FROM TABLE(dbms_xplan.display());
-*/
 
 -- Priklad na EXPLAIN PLAN A CREATE INDEX
 -- Vysledkem z tychto dvoch tabulek je ze sloupec TABLE ACESS FULL se zmeni na TABLE ACESS BY INDEX ROWID BATCHED => Je zrejme, ze system pouzil nas CREATE INDEX a zatizeni systemu se zmensil
