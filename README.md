@@ -1,5 +1,10 @@
 # IDS Dokumentace
 
+**Téma:** Sociální síť
+**Autoři:** 
+* Attila Lakatos (xlakat01)
+* Josef Adámek (xadame42)
+
 ## Převod vztahu generalizace/specializace
 
 ![prevod vztahu](erd_social.png)
