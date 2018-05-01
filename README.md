@@ -6,6 +6,15 @@
 
 Pro převod vztahu generalizace/specializace jsme zvolili metodu převedení do dvou tabulek. Tento spůdob jsme zvolili, protože naše specializace jsou disjunktní a také jelikož entita Fotka má vztahy ještě s entitami Album a Akce, a musí do ní být uložen soubor (fotka), tak použitím dvou tabulek zamezíme vytváření prázdných míst.
 
+## Triggery
+Prvním triggerem vyplývajícím ze zadání projektu byl trigger na autoinkrementaci primárního klíče. Taktéž jsme vytvořili sekvenci kvůli uchování posledního čísla. Tato procedura byla aplikována na sloupec IDAkce z tabulky Akce.
+Druhý trigger ověřoval, zda jsou čísla PSČ zadána ve správném tvaru. Trigger se spouští před ukládáním dat do tabulky.
+
+## Procedury
+Podle zadání projektu jsme vytvořili 2 procedury. V každé proceduře jsme použili kurzor, abychom byli schopní pracovat s řádky v databázi, a proměnnou s datovým typem odkazujícím na řádek tabulky.
+První procedura vypíše počet akcí ve městě Brno a jeho procentuální vyjádření na dbms_output. Ošetřili jsme i případ dělení nulou, který může nastat tehdy, kdy informační systém neobsahuje žádné záznamy akcí. Hodnoty jsou zaokrouhlené na 2 desetinná místa.
+Druhá procedura vypíše všechny uživatele, kteří zadali nesprávné kontaktní údaje a dále vypíše statistiku o kontaktních údajích. Náš systém umožňuje zadat různé kontaktní údaje, jako jsou například: telefonní číslo, email, webová stránka atd., a tato procedura detekuje nesprávně zadané hodnoty.
+
 ## EXPLAIN PLAN
 Pomocí EXPLAIN PLAN získáme plán jak databáze zpracovává daný dotaz. Demonstrovali jsme na jednoduchém SELECT dotaze. Nejprve jsme spustili EXPLAIN PLAN bez použití indexů, následně jsme nadefinovali index a spustili jsme EXPLAIN PLAN znovu.
 
@@ -20,22 +29,12 @@ Při používání EXPLAIN PLAN bez indexu máme TABLE ACCESS FULL, což znamen�
 V druhé tabulce se vykonával TABLE ACCESS BY INDEX ROWID BATCHED, který značí, že se přistupuje do tabulky přes konkrétní řádek (použil se náš index).
 Díky tomu se snížila "cena", ale na druhé straně %CPU se zvětšilo. INDEX UNIQUE SCAN značí přístup k tabulkám přes B-strom.
 
-## Procedury
-Podľa zadania projektu sme vytvorili 2 procedury. V každej procedure sme používali kurzor, aby sme boli schopný pracovať s riadkami v databáze a premenná s datovým typom odkazujúcim na riadok tabulky.
-Prvá procedura vypíše počet akcii v meste Brno a jeho procentularní vyjádrení na dbms_output. Ošetrili sme i prípad delenia nulou, ktorý sa može nastať tedy, keď informačný systém neobsahuje žiadne akcie. Hodnoty sú zaokrúhlené na 2 desatinne miesta.
-Druhá procedura vypíše všetkých uzivatelov, ktori zadali nesprávne kontaktné udaje a statisku o kontaktnich udajov. Náš systém umožňuje zadať rozné kontaktné údaje, akor sú napríklad: telefonné číslo, email, webová stránka, atď a táto procedura detekuje nesprávne zadané hodnoty.
+## Přidělení práv
+Druhý člen musí zadat SQL příkaz ALTER SESSION SET CURRENT_SCHEMA = první_člen_týmu, aby mohl pracovat s tabulkami.
+Přidělení přístupových práv se realizuje pomocí:
+* k tabulkám/materializovanému pohledu:  GRANT ALL ON tabulka/materializovaný_pohled TO druhý_člen_týmu
+* k procedurám:                          GRANT EXECUTE ON procedura TO druhý_člen_týmu
 
-## Triggery
-Prvým triggerom vyplívajúcim zo zadania projektu bol trigger na auinkrementáciu primárného klúča. Taktiež sme vytvorili sekvenciu kvoli uchovaniu posleného čísla. Táto procedura bola aplikovaná na sloupec IDAkce z tabulky Akce.
-
-Posledný trigger overoval, zda sú čísla PSČ zadané v správnem tvaru. Trigger sa spúšťa pred ukládaním dat do tabulky.
-
-## Materializovany pohled
-Najprv bolo potrebné vytvoriť materializované záznamy, takz. logy obsahujúce zmeny hlavnej tabulky, ktoré slúžia na to, aby bolo možné používať rýchlu obnovu po potvrdení zmien namiesto kompletnej obnovy, ktorá by vyžadovala spúšťať celý dotaz materializovaného pohledu, čo by trvalo dlhšie.
-Okrem REFRESH FAST ON COMMIT sme nastavovali i dalsí vlastnost materializovaného pohledu: BUILD IMMEDIATE - po vytvorení sa naplni hodnotami. Nakoniec sme k tomu pridali jednoduchý SELECT dotaz.
-
-## Pridelenie prav
-Druhy člen týmu musí zadať SQL príkaz ALTER SESSION SET CURRENT_SCHEMA = prvý_člem_týmu aby vedel pracovat s tabulkami.
-Pridelenie pristupových práv sa realizuje pomocou:
-* k tabulkám/materializovanému pohledu:  GRANT ALL ON tabulka/materializovany_pohled TO druhý_člen_týmu
-* k proceduram:                          GRANT EXECUTE ON procedura TO druhý_člen_týmu
+## Materializovaný pohled
+Nejprve bylo potřeba vytvořit materializované záznamy (tzv. logy) obsahující změny hlavní tabulky, které slouží na to, aby bylo možné používat rychlou obnovu po potvrzení změn, namísto kompletní obnovy, která by vyžadovala spouštět celý dotaz materializovaného pohledu, což by trvalo déle.
+Kromě REFRESH FAST ON COMMIT jsme nastavovali i další vlastnost materializovaného pohledu: BUILD IMMEDIATE - po vytvoření se naplní hodnotami. Nakonec jsme k tomu přidali jednoduchý SELECT dotaz.
